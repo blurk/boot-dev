@@ -1,0 +1,83 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+.env/
+htmlcov/
+dist/
+build/
+develop-eggs/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.txt
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Environments (e.g. virtualenv)
+.venv/
+venv/
+env/
+ENV/
+.env/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# mypy cache
+.mypy_cache/
+
+# Pytest cache
+.pytest_cache/
+
+# coverage
+.coverage
+coverage.xml
+*.cover
+
+# Environments (e.g. docker)
+.dockerenv
+.env
+
+# OS or Editor related files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.idea/
+*.vscode/
+*.tmproj
+*.sublime-project
+*.sublime-workspace
+
+# Compiled static assets
+static/build/
+
+# Logs
+*.log
+logs/
+
+# Optional: exclude data files (if large and not needed in repo)
+# data/
+
+# Optional: exclude documentation build (if large and not needed in repo)
+# docs/_build/
