@@ -1,0 +1,1 @@
+ - To run `create_folder.sh`: run with `. [path to the script]` to make sure cd work
