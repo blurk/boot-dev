@@ -30,7 +30,7 @@ func (c *Cache) Add(key string, value []byte) {
 // Get -
 func (c *Cache) Get(key string) ([]byte, bool) {
 	c.mu.Lock()
-	defer c.mu.Lock()
+	defer c.mu.Unlock()
 
 	value, exists := c.values[key]
 	return value.val, exists
