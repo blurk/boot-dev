@@ -1,12 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
+	"io"
+	"log"
 	"strings"
 
 	"github.com/blurk/boot-dev/015-build-a-pokedex/ch01/002/internal/pokeapi"
+	"github.com/chzyer/readline"
 )
 
 type config struct {
@@ -17,15 +18,48 @@ type config struct {
 }
 
 func startRepl(config *config) {
-	reader := bufio.NewScanner(os.Stdin)
-	for {
-		fmt.Print("Pokedex > ")
-		reader.Scan()
+	rl, err := readline.NewEx(&readline.Config{
+		Prompt:          "Pokedex > ",
+		HistoryFile:     "/tmp/pokedex_history.tmp",
+		InterruptPrompt: "^C",
+		EOFPrompt:       "exit",
+	})
+	if err != nil {
+		log.Fatalf("Failed to initialize readline: %v", err)
+	}
 
-		words := cleanInput(reader.Text())
-		if len(words) == 0 {
-			continue
+	// Ensure the readline instance is closed when main exits.
+	// This is important for restoring terminal settings.
+	defer rl.Close()
+
+	fmt.Println("Welcome to Pokedex. Type 'exit' or press Ctrl+D to quit.")
+
+	// Main loop to read commands
+	for {
+		// Read a line of input from the user.
+		// Readline handles history navigation (up/down arrows) and line editing.
+		line, err := rl.Readline()
+
+		// Handle potential errors during input reading.
+		if err == readline.ErrInterrupt {
+			// User pressed Ctrl+C
+			// If line was empty, exit. Otherwise, clear current line.
+			if len(line) == 0 {
+				break // Exit the loop
+			} else {
+				continue // Continue to next iteration, clearing input
+			}
+		} else if err == io.EOF {
+			// User pressed Ctrl+D
+			break // Exit the loop
+		} else if err != nil {
+			// Other potential errors
+			log.Printf("Error reading line: %v", err)
+			break // Exit on other errors
 		}
+
+		// Trim whitespace from the input.
+		words := strings.Fields(strings.ToLower(line))
 
 		commandName := words[0]
 
@@ -34,6 +68,7 @@ func startRepl(config *config) {
 			args = words[1:]
 		}
 
+		// --- Process the command ---
 		command, exists := getCommands()[commandName]
 		if exists {
 			err := command.callback(config, args...)
@@ -45,13 +80,12 @@ func startRepl(config *config) {
 			fmt.Println("Unknown command")
 			continue
 		}
-	}
-}
 
-func cleanInput(text string) []string {
-	output := strings.ToLower(text)
-	words := strings.Fields(output)
-	return words
+		// The command is automatically added to history by readline *after*
+		// Readline() returns successfully.
+	}
+
+	commandExit(config)
 }
 
 type cliCommand struct {
