@@ -19,7 +19,7 @@ curl -X POST https://api.boot.dev/v1/courses_rest_api/learn-http/users -H "Conte
 
 ### Ideas for Extending the Project
 
-- [ x ] Update the CLI to support the "up" arrow to cycle through previous commands
+- [x] Update the CLI to support the "up" arrow to cycle through previous commands
 - [ ] Simulate battles between pokemon
 - [ ] Add more unit tests
 - [ ] Refactor your code to organize it better and make it more testable
