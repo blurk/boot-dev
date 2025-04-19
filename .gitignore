@@ -82,3 +82,4 @@ logs/
 # Optional: exclude documentation build (if large and not needed in repo)
 # docs/_build/
 015-build-a-pokedex/ch01/002/002
+016-learn-sql/sqlite3.exe
