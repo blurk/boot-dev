@@ -69,3 +69,123 @@ The big difference between relational and non-relational databases is that non-r
 To over-simplify it, you can think of non-relational databases as giant JSON blobs. If a user can have multiple courses, you might just add all the courses to the user record.
 
 This often results in duplicate data within the database. That's obviously less than ideal, but it does have some benefits.
+
+## HTTP CRUD Database Lifecycle
+
+Here's how we could engineer GET request:
+
+First, the front-end webpage loads.
+The front-end sends an HTTP GET request to a /users endpoint on the back-end server.
+The server receives the request.
+The server uses a SELECT statement to retrieve the user's record from the users table in the database.
+The server converts the row of SQL data into a JSON object and sends it back to the front-end.
+
+## WHERE
+
+You can use a WHERE clause to filter values by whether or not they're NULL.
+
+### IS NULL
+```sql
+SELECT name FROM users WHERE first_name IS NULL;
+```
+
+### IS NOT NULL
+```sql
+SELECT name FROM users WHERE first_name IS NOT NULL;
+```
+
+## DELETING STRATEGY
+
+### Strategy 1 - Backups
+If you're using a cloud-service like GCP's Cloud SQL or AWS's RDS you should always turn on automated backups. They take an automatic snapshot of your entire database on some interval, and keep it around for some length of time.
+
+For example, the Boot.dev database has a backup snapshot taken daily and we retain those backups for 30 days. If I ever accidentally run a query that deletes valuable data, I can restore it from the backup.
+
+You should have a backup strategy for production databases.
+
+### Strategy 2 - Soft Deletes
+A "soft delete" is when you don't actually delete data from your database, but instead just "mark" the data as deleted. For example, you might set a deleted_at date on the row you want to delete. Then, in your queries you ignore anything that has a deleted_at date set. The idea is that this allows your application to behave as if it's deleting data, but you can always go back and restore any data that's been removed.
+
+## Object-Relational Mapping (ORMs)
+An Object-Relational Mapping or an ORM for short, is a tool that allows you to perform CRUD operations on a database using a traditional programming language.
+These typically come in the form of a library or framework that you would use in your backend code.
+
+The primary benefit an ORM provides is that it maps your database records to in-memory objects.
+
+## AS clause
+Sometimes we need to structure the data we return from our queries in a specific way. An AS clause allows us to "alias" a piece of data in our query. The alias only exists for the duration of the query.
+
+As Keyword
+The following queries return the same data:
+
+```sql
+SELECT employee_id AS id, employee_name AS name
+FROM employees;
+
+SELECT employee_id, employee_name
+FROM employees;
+```
+
+The difference is that the results from the aliased query would have column names id and name instead of employee_id and employee_name.
+
+## In
+Another variation to the WHERE clause we can utilize is the IN operator. IN returns true or false if the first operand matches any of the values in the second operand. The IN operator is a shorthand for multiple OR conditions.
+
+These two queries are equivalent:
+
+```sql
+SELECT product_name, shipment_status
+    FROM products
+    WHERE shipment_status IN ('shipped', 'preparing', 'out of stock');
+```
+
+```sql
+SELECT product_name, shipment_status
+    FROM products
+    WHERE shipment_status = 'shipped'
+        OR shipment_status = 'preparing'
+        OR shipment_status = 'out of stock';
+```
+
+## Like
+The LIKE keyword allows for the use of the % and _ wildcard operators.
+
+### % Operator
+The % operator will match zero or more characters. We can use this operator within our query string to find more than just exact matches depending on where we place it.
+
+```sql
+# Product Starts With “banana”:
+SELECT * FROM products
+WHERE product_name LIKE 'banana%';
+
+# Product Ends With “banana”:
+SELECT * FROM products
+WHERE product_name LIKE '%banana';
+
+# Product Contains “banana”:
+SELECT * FROM products
+WHERE product_name LIKE '%banana%';
+```
+
+### The _ operator
+
+The _ wildcard operator only matches a single character.
+
+```sql
+SELECT * FROM products
+    WHERE product_name LIKE '_oot';
+```
+
+The query above matches products like:
+- boot
+- root
+- foot
+
+```sql
+SELECT * FROM products
+    WHERE product_name LIKE '__oot';
+```
+
+The query above matches products like:
+- shoot
+- groot

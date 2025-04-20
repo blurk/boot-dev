@@ -1,0 +1,1 @@
+SELECT *, IIF(was_successful = 1, 'No action required', 'Perform an audit') AS audit FROM transactions

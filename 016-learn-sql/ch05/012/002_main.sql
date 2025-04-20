@@ -1,0 +1,1 @@
+SELECT *, IIF(country_code = 'CA' OR age > 55, 1, 0) as discount_eligible FROM users;
