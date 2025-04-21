@@ -13,11 +13,18 @@ printfString=""
 for file in "$folder"/*; do
   if [[ -f "$file" ]]; then
     file_name=$(basename "$file")
-    printfString+=".read $folder$file_name\\n"
+    printfString+=".mode table\n.read $folder$file_name\\n"
   fi
 done
 
+output=$(printf "$printfString" | ./sqlite3.exe)
 
-printf "$printfString" | ./sqlite3.exe > output.log
+if [[ -z "$output" ]]; then
+  echo "No data found."
+  exit 1
+fi
 
+printf "$output"
+
+echo ""
 echo "Done"

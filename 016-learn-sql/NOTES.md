@@ -189,3 +189,41 @@ SELECT * FROM products
 The query above matches products like:
 - shoot
 - groot
+
+### ORDER BY and Limit
+
+When using both ORDER BY and LIMIT, the ORDER BY clause must come first.
+
+## What Are Aggregations?
+An "aggregation" is a single value that's derived by combining several other values. We performed an aggregation earlier when we used the COUNT statement to count the number of records in a table.
+
+### Why Aggregations?
+Data stored in a database should generally be stored raw. When we need to calculate some additional data from the raw data, we can use an aggregation.
+
+Take the following COUNT aggregation as an example:
+
+```sql
+SELECT COUNT(*)
+FROM products
+WHERE quantity = 0;
+```
+This query returns the number of products that have a quantity of 0. We could store a count of the products in a separate database table, and increment/decrement it whenever we make changes to the products table - but that would be redundant.
+
+It's much simpler to store the products in a single place (we call this a single source of truth) and run an aggregation when we need to derive additional information from the raw data.
+
+## GROUP BY
+There are times we need to group data based on specific values.
+
+SQL offers the GROUP BY clause which can group rows that have similar values into "summary" rows. It returns one row for each group. The interesting part is that each group can have an aggregate function applied to it that operates only on the grouped data.
+
+## Having
+When we need to filter the results of a GROUP BY query even further, we can use the HAVING clause. The HAVING clause specifies a search condition for a group.
+
+The HAVING clause is similar to the WHERE clause, but *it operates on groups after they've been grouped, rather than rows before they've been grouped.*
+
+## HAVING vs. WHERE in SQL
+The difference is fairly simple in actuality:
+
+- A WHERE condition is applied to all the data in a query before it's grouped by a GROUP BY clause.
+- A HAVING condition is only applied to the grouped rows that are returned after a GROUP BY is applied.
+This means that if you want to filter based on the result of an aggregation, you need to use HAVING. If you want to filter on a value that's present in the raw data, you should use a simple WHERE clause.
