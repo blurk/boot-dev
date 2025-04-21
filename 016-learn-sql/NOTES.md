@@ -227,3 +227,86 @@ The difference is fairly simple in actuality:
 - A WHERE condition is applied to all the data in a query before it's grouped by a GROUP BY clause.
 - A HAVING condition is only applied to the grouped rows that are returned after a GROUP BY is applied.
 This means that if you want to filter based on the result of an aggregation, you need to use HAVING. If you want to filter on a value that's present in the raw data, you should use a simple WHERE clause.
+
+## Table Relationships
+A relationship between tables assumes that one of these tables has a foreign key that references the primary key of another table.
+
+### Types of relationships
+- One-to-one
+- One-to-many
+- Many-to-many
+
+## Database Normalization
+Database normalization is a method for structuring your database schema in a way that helps:
+
+- Improve data integrity
+- Reduce data redundancy
+
+### What Is Data Integrity?
+"Data integrity" refers to the accuracy and consistency of data. For example, if a user's age is stored in a database, rather than their birthday, that data becomes incorrect automatically with the passage of time.
+
+It would be better to store a birthday and calculate the age as needed.
+
+### What Is Data Redundancy?
+"Data redundancy" occurs when the same piece of data is stored in multiple places. For example: saving the same file multiple times to different hard drives.
+
+Data redundancy can be problematic, especially when data in one place is changed such that the data is no longer consistent across all copies of that data.
+
+### Normal Form:
+
+- 1NF:
+    - Every row must have  a unique primary key
+    - There can be no nested tables
+- 2NF: All columns that are not part of the primary key must only be dependent on the entire primary key
+- 3NF: All the columns not in the primary key are dependent ONLY on the primary key
+- Boyce Codd NF: A column that IS part of the primary key may NOT be dependent on a column that is NOT part of the primary key
+
+In the Context of Normal Forms, “Primary Key” Means Something a Bit Different
+In the context of database normalization, we're going to use the term "primary key" slightly differently. When we're talking about SQLite, a "primary key" is a single column that uniquely identifies a row.
+
+When we're talking more generally about data normalization, the term "primary key" means the collection of columns that uniquely identify a row. That can be a single column, but it can actually be any number of columns that form a composite key. A primary key is the minimum number of columns needed to uniquely identify a row in a table.
+
+If you think back to the many-to-many joining table product_suppliers, that table's "primary key" was actually a combination of the 2 ids, product_id and supplier_id:
+
+```sql
+CREATE TABLE product_suppliers (
+    product_id INTEGER,
+    supplier_id INTEGER,
+    UNIQUE(product_id, supplier_id)
+);
+```
+
+```
+Optimize for data integrity and data de-duplication first. If you have speed issues, de-normalize accordingly.
+```
+
+## Rules of Thumb for Database Design
+1. Every table should always have a unique identifier (primary key)
+2. 90% of the time, that unique identifier will be a single column named id
+3. Avoid duplicate data
+4. Avoid storing data that is completely dependent on other data. Instead, compute it on the fly when you need it.
+5. Keep your schema as simple as you can. Optimize for a normalized database first. Only denormalize for speed's sake when you start to run into performance problems.
+
+## JOINS
+Joins are one of the most important features that SQL offers. Joins allow us to make use of the relationships we have set up between our tables.
+In short, joins allow us to query multiple tables at the same time.
+
+### Inner Join
+The simplest and most common type of join in SQL is the INNER JOIN. By default, a JOIN command is an INNER JOIN. An INNER JOIN returns all of the records in table_a that have matching records in table_b as demonstrated by the following Venn diagram.
+
+![example](image-join.png)
+
+### Left Join
+A LEFT JOIN will return every record from table_a regardless of whether or not any of those records have a match in table_b. A left join will also return any matching records from table_b. Here is a Venn diagram to help visualize the effect of a LEFT JOIN.
+
+![example](image-left-join.png)
+
+### Right Join
+A RIGHT JOIN is the opposite of a LEFT JOIN. It returns all records from table_b regardless of matches, and all matching records between the two tables.
+
+![example](image-right-join.png)
+
+### Full Join
+A FULL JOIN combines the result set of the LEFT JOIN and RIGHT JOIN commands. It returns all records from both table_a and table_b regardless of whether or not they have matches.
+
+![example](image-full-join.png)
