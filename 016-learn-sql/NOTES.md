@@ -310,3 +310,30 @@ A RIGHT JOIN is the opposite of a LEFT JOIN. It returns all records from table_b
 A FULL JOIN combines the result set of the LEFT JOIN and RIGHT JOIN commands. It returns all records from both table_a and table_b regardless of whether or not they have matches.
 
 ![example](image-full-join.png)
+
+## SQL Indexes
+An index is an in-memory structure that ensures that queries we run on a database are performant, that is to say, they run quickly. If you can remember back to the data structures course, most database indexes are just binary trees or B-trees! The binary tree can be stored in ram as well as on disk, and it makes it easy to lookup the location of an entire row.
+
+PRIMARY KEY columns are indexed by default, ensuring you can look up a row by its id very quickly. However, if you have other columns that you want to be able to do quick lookups on, you'll need to index them.
+
+```sql
+CREATE INDEX index_name ON table_name (column_name);
+```
+
+*Add an index to columns you know you'll be doing frequent lookups on. Leave everything else un-indexed. You can always add indexes later.*
+
+## Multi-Column Indexes
+Multi-column indexes are useful for the exact reason you might think - they speed up lookups that depend on multiple columns.
+
+*Unless you have specific reasons to do something special, only add multi-column indexes if you're doing frequent lookups on a specific combination of columns.*
+
+## Denormalizing for Speed
+Data integrity and deduplication come at a cost, and that cost is usually speed.
+
+Joining tables together, using subqueries, performing aggregations, and running post-hoc calculations take time. At very large scales these advanced techniques can actually become a huge performance toll on an application - sometimes grinding the database server to a halt.
+
+Storing duplicate information can drastically speed up an application that needs to look it up in different ways. For example, if you store a user's country information right on their user record, no expensive join is required to load their profile page!
+
+*Denormalize at your own risk! Denormalizing a database incurs a large risk of inaccurate and buggy data*
+
+***it should be used as a kind of "last resort" in the name of speed.***
