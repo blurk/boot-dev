@@ -337,3 +337,6 @@ Storing duplicate information can drastically speed up an application that needs
 *Denormalize at your own risk! Denormalizing a database incurs a large risk of inaccurate and buggy data*
 
 ***it should be used as a kind of "last resort" in the name of speed.***
+
+## Middleware
+Middleware is a way to wrap a function with additional functionality. It is a common pattern that allows us to write DRY code.
