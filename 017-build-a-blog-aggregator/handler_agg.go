@@ -1,20 +1,32 @@
 package main
 
 import (
-	"context"
 	"fmt"
+	"time"
 )
 
-const url = "https://www.wagslane.dev/index.xml"
+const url = "https://blog.boot.dev/index.xml"
 
 func handleAgg(s *state, cmd command) error {
-	res, err := fetchFeed(context.Background(), url)
-
-	if err != nil {
-		return fmt.Errorf("couldn't fetch feed: %w\n", err)
+	if len(cmd.args) != 1 {
+		return fmt.Errorf("usage: %s <time_between_reqs>", cmd.name)
 	}
 
-	fmt.Printf("Feed: %+v\n", res)
+	timeBetweenReqs, err := time.ParseDuration(cmd.args[0])
+	if err != nil {
+		return err
+	}
 
-	return nil
+	fmt.Printf("Collecting feeds every %v\n", timeBetweenReqs)
+
+	ticker := time.NewTicker(timeBetweenReqs)
+	defer ticker.Stop()
+
+	for ; ; <-ticker.C {
+		err := scrapeFeeds(s)
+
+		if err != nil {
+			return err
+		}
+	}
 }

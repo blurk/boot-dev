@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/blurk/boot-dev/017-build-a-blog-aggregator/internal/database"
 	"github.com/google/uuid"
@@ -18,22 +17,18 @@ func handlerAddFeed(s *state, cmd command, currentUser database.User) error {
 	feedUrl := cmd.args[1]
 
 	newFeed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{
-		ID:        uuid.New(),
-		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
-		Name:      feedName,
-		Url:       feedUrl,
-		UserID:    currentUser.ID,
+		ID:     uuid.New(),
+		Name:   feedName,
+		Url:    feedUrl,
+		UserID: currentUser.ID,
 	})
 	if err != nil {
 		return fmt.Errorf("couldn't add new feed: %w", err)
 	}
 
 	_, err = s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{ID: uuid.New(),
-		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
-		UserID:    currentUser.ID,
-		FeedID:    newFeed.ID,
+		UserID: currentUser.ID,
+		FeedID: newFeed.ID,
 	})
 	if err != nil {
 		return err
@@ -98,11 +93,9 @@ func handlerFollow(s *state, cmd command, currentUser database.User) error {
 	}
 
 	follow, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
-		ID:        uuid.New(),
-		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
-		UserID:    currentUser.ID,
-		FeedID:    feed.ID,
+		ID:     uuid.New(),
+		UserID: currentUser.ID,
+		FeedID: feed.ID,
 	})
 
 	if err != nil {
