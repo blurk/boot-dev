@@ -17,7 +17,7 @@ curl -X POST https://api.boot.dev/v1/courses_rest_api/learn-http/users -H "Conte
 }' > /tmp/user.json
  ```
 
-### Ideas for Extending the Project
+### Ideas for extending the Project: 015 Pokedex
 
 - [x] Update the CLI to support the "up" arrow to cycle through previous commands
 - [ ] Simulate battles between pokemon
@@ -29,3 +29,14 @@ curl -X POST https://api.boot.dev/v1/courses_rest_api/learn-http/users -H "Conte
 - [ ] Use the PokeAPI to make exploration more interesting. For example, rather than typing the names of areas, maybe you are given choices of areas and just type "left" or "right"
 - [ ] Random encounters with wild pokemon
 - [ ] Adding support for different types of balls (Pokeballs, Great Balls, Ultra Balls, etc), which have different chances of catching pokemon
+
+### Ideas for extending the Project: 017 Blog aggregator
+
+- [ ] Add sorting and filtering options to the browse command
+- [ ] Add pagination to the browse command
+- [ ] Add concurrency to the agg command so that it can fetch more frequently
+- [ ] Add a search command that allows for fuzzy searching of posts
+- [ ] Add bookmarking or liking posts
+- [ ] Add a TUI that allows you to select a post in the terminal and view it in a more readable format (either in the terminal or open in a browser)
+- [ ] Add an HTTP API (and authentication/authorization) that allows other users to interact with the service remotely
+- [ ] Write a service manager that keeps the agg command running in the background and restarts it if it crashes
