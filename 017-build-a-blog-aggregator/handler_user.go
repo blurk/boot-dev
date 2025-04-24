@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/blurk/boot-dev/017-build-a-blog-aggregator/internal/database"
 	"github.com/google/uuid"
@@ -40,10 +39,8 @@ func handlerRegister(s *state, cmd command) error {
 
 	name := cmd.args[0]
 	user, err := s.db.CreateUser(context.Background(), database.CreateUserParams{
-		ID:        uuid.New(),
-		Name:      name,
-		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
+		ID:   uuid.New(),
+		Name: name,
 	})
 
 	if err != nil {
