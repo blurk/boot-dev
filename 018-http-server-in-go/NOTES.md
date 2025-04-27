@@ -60,3 +60,57 @@ We won't be using this but be aware that patterns can also start with a hostname
 - Easier to practice good separation of concerns as the codebase grows
 - Can be hosted on separate servers and using separate technologies
 - Embedding data in the HTML is still possible with pre-rendering (similar to how Next.js works), it's just more complicated
+
+## The Context Package
+The context package is a part of Go's standard library. It does several things, but the most important thing is that it handles timeouts. All of SQLC's database queries accept a context.Context as their first argument:
+
+```go
+user, err := cfg.db.CreateUser(r.Context(), params.Email)
+```
+By passing your handler's http.Request.Context() to the query, the library will automatically cancel the database query if the HTTP request is canceled or times out.
+
+## Authentication
+Authentication is the process of verifying who a user is. If you don't have a secure authentication system, your back-end systems will be open to attack!
+
+### Passwords Should Be Strong
+The most important factor for the strength of a password is its entropy. Entropy is a measure of how many possible combinations of characters there are in a string. To put it simply:
+- The longer the password the better
+- Special characters and capitals should always be allowed
+- Special characters and capitals aren't as important as length
+
+### Passwords Should Never Be Stored in Plain Text
+The most critical thing we can do to protect our users' passwords is to never store them in plain text. We should use cryptographically strong key derivation functions (which are a special class of hash functions) to store passwords in a way that prevents them from being read by anyone who gets access to your database.
+
+Bcrypt is a great choice. SHA-256 and MD5 are not.
+
+## Types of Authentication
+Here are a few of the most common authentication methods you'll see in the wild:
+
+1. Password + ID (username, email, etc.)
+2. 3rd Party Authentication ("Sign in with Google", "Sign in with GitHub", etc)
+3. Magic Links
+4. API Keys
+
+## You can generate a nice long random string on the command line like this:
+```bash
+openssl rand -base64 64
+```
+
+## Revoking JWTs
+One of the main benefits of JWTs is that they're stateless. The server doesn't need to keep track of which users are logged in via JWT. The server just needs to issue a JWT to a user and the user can use that JWT to authenticate themselves. Statelessness is fast and scalable because your server doesn't need to consult a database to see if a user is currently logged in.
+
+However, that same benefit poses a potential problem. JWTs can't be revoked. If a user's JWT is stolen, there's no easy way to stop the JWT from being used. JWTs are just a signed string of text.
+
+The JWTs we've been using so far are more specifically access tokens. Access tokens are used to authenticate a user to a server, and they provide access to protected resources. Access tokens are:
+- Stateless
+- Short-lived (15m-24h)
+- Irrevocable
+
+They must be short-lived because they can't be revoked. The shorter the lifespan, the more secure they are. Trouble is, this can create a poor user experience. We don't want users to have to log in every 15 minutes.
+
+### A Solution: Refresh Tokens
+Refresh tokens don't provide access to resources directly, but they can be used to get new access tokens. Refresh tokens are much longer lived, and importantly, they can be revoked. They are:
+- Stateful
+- Long-lived (24h-60d)
+- Revocable
+Now we get the best of both worlds! Our endpoints and servers that provide access to protected resources can use access tokens, which are fast, stateless, simple, and scalable. On the other hand, refresh tokens are used to keep users logged in for longer periods of time, and they can be revoked if a user's access token is compromised.

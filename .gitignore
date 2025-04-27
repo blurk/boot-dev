@@ -85,3 +85,4 @@ logs/
 016-learn-sql/sqlite3.exe
 017-build-a-blog-aggregator/017-build-a-blog-aggregator
 *out
+*learn
