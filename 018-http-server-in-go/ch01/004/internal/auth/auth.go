@@ -121,3 +121,23 @@ func MakeRefreshToken() (string, error) {
 
 	return token, nil
 }
+
+func GetAPIKey(headers http.Header) (string, error) {
+	authorization := headers.Get("Authorization")
+
+	if len(authorization) == 0 {
+		return "", fmt.Errorf("authorization headers is missing")
+	}
+
+	parts := strings.SplitN(authorization, " ", 2)
+	if len(parts) != 2 {
+		return "", fmt.Errorf("malformed authorization header")
+	}
+
+	scheme := strings.ToLower(parts[0])
+	if scheme != "apikey" {
+		return "", fmt.Errorf("incorrect authorization scheme: expected ApiKey, got %s", parts[0])
+	}
+
+	return parts[1], nil
+}

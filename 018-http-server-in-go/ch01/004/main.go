@@ -17,6 +17,7 @@ type apiConfig struct {
 	db             *database.Queries
 	platform       string
 	jwtSecret      string
+	polkaKey       string
 }
 
 func main() {
@@ -28,11 +29,12 @@ func main() {
 	dbURL := os.Getenv("DB_URL")
 	platform := os.Getenv("PLATFORM")
 	jwtSecret := os.Getenv("JWT_SECRET")
+	polkaKey := os.Getenv("POLKA_KEY")
 
 	db, err := sql.Open("postgres", dbURL)
 	dbQueries := database.New(db)
 
-	apiConfig := &apiConfig{fileserverHits: atomic.Int32{}, db: dbQueries, platform: platform, jwtSecret: jwtSecret}
+	apiConfig := &apiConfig{fileserverHits: atomic.Int32{}, db: dbQueries, platform: platform, jwtSecret: jwtSecret, polkaKey: polkaKey}
 
 	const FILE_PATH_ROOT = "."
 	const PORT = "8080"
@@ -61,6 +63,8 @@ func main() {
 
 	mux.HandleFunc("GET /admin/metrics", apiConfig.handlerMetrics)
 	mux.HandleFunc("POST /admin/reset", apiConfig.handlerReset)
+
+	mux.HandleFunc("POST /api/polka/webhooks", apiConfig.handleWebhook)
 
 	server := &http.Server{
 		Addr:    ":" + PORT,

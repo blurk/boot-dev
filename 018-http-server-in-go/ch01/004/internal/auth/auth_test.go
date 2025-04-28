@@ -218,3 +218,81 @@ func TestGetBearerToken(t *testing.T) {
 		}
 	}
 }
+
+func TestMakeRefreshToken(t *testing.T) {
+	t.Run("Valid Refresh Token", func(t *testing.T) {
+		refreshToken, err := MakeRefreshToken()
+		if err != nil {
+			t.Fatalf("Failed to create test token: %v", err)
+		}
+
+		if len(refreshToken) == 0 {
+			t.Fatalf("Test token invalid: %v", refreshToken)
+		}
+	})
+}
+
+func TestGetAPIKey(t *testing.T) {
+	tests := []struct {
+		name    string
+		headers http.Header
+		want    string
+		wantErr bool
+	}{
+		{
+			name:    "Valid API Key",
+			headers: http.Header{"Authorization": {"ApiKey valid_api_key"}},
+			want:    "valid_api_key",
+			wantErr: false,
+		},
+		{
+			name:    "Missing Authorization Header",
+			headers: http.Header{},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name:    "Malformed Authorization Header - No Space",
+			headers: http.Header{"Authorization": {"ApiKeyvalid_api_key"}},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name:    "Malformed Authorization Header - Too Many Spaces",
+			headers: http.Header{"Authorization": {"ApiKey  valid_api_key"}},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name:    "Incorrect Scheme - lowercase",
+			headers: http.Header{"Authorization": {"apikey valid_api_key"}},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name:    "Incorrect Scheme - Other",
+			headers: http.Header{"Authorization": {"Bearer valid_api_key"}},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name:    "Empty API Key",
+			headers: http.Header{"Authorization": {"ApiKey "}},
+			want:    "",
+			wantErr: false, // Or true, depending on your desired behavior
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetAPIKey(tt.headers)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetAPIKey() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("GetAPIKey() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
