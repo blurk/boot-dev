@@ -42,10 +42,22 @@ func main() {
 	mux.HandleFunc("GET /api/healthz", handlerReadiness)
 	mux.HandleFunc("POST /api/chirps", apiConfig.handleChiprsCreate)
 	mux.HandleFunc("GET /api/chirps", apiConfig.handleChirpsGet)
-	mux.HandleFunc("GET /api/chirps/{chirpID}", apiConfig.handleChirpGet)
+	mux.HandleFunc("/api/chirps/{chirpID}", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			apiConfig.handleChirpsGetOne(w, r)
+		case http.MethodDelete:
+			apiConfig.handleChirpsDelete(w, r)
+		default:
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		}
+	})
 
-	mux.HandleFunc("POST /api/users", apiConfig.handlerUsersCreate)
+	mux.HandleFunc("POST /api/users", apiConfig.handleUsersCreate)
 	mux.HandleFunc("POST /api/login", apiConfig.handlerLogin)
+	mux.HandleFunc("POST /api/refresh", apiConfig.handlerRefreshToken)
+	mux.HandleFunc("POST /api/revoke", apiConfig.handlerRevoke)
+	mux.HandleFunc("PUT /api/users", apiConfig.handleUsersUpdate)
 
 	mux.HandleFunc("GET /admin/metrics", apiConfig.handlerMetrics)
 	mux.HandleFunc("POST /admin/reset", apiConfig.handlerReset)
