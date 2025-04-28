@@ -6,6 +6,7 @@ import (
 	"learn/internal/database"
 	"net/http"
 	"slices"
+	"sort"
 	"strings"
 	"time"
 
@@ -91,14 +92,30 @@ func (cfg *apiConfig) handleChiprsCreate(w http.ResponseWriter, r *http.Request)
 }
 
 func (cfg *apiConfig) handleChirpsGet(w http.ResponseWriter, r *http.Request) {
-	data, err := cfg.db.GetChiprs(r.Context())
+	authorIDStr := r.URL.Query().Get("author_id")
+	sortStr := r.URL.Query().Get("sort")
+
+	var data []database.Chirp
+	var err error
+
+	if authorIDStr == "" {
+		data, err = cfg.db.GetChiprs(r.Context())
+	} else {
+		authorID, err := uuid.Parse(authorIDStr)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, "Failed to get chirps", err)
+			return
+		}
+		data, err = cfg.db.GetChirpsByAuthorID(r.Context(), authorID)
+	}
+
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error(), err)
+		respondWithError(w, http.StatusInternalServerError, "Failed to get chirps", err)
+		return
 	}
 
 	chirps := make([]Chirp, len(data))
-
-	for i, chirp := range chirps {
+	for i, chirp := range data {
 		chirps[i] = Chirp{
 			ID:        chirp.ID,
 			CreatedAt: chirp.CreatedAt,
@@ -106,6 +123,12 @@ func (cfg *apiConfig) handleChirpsGet(w http.ResponseWriter, r *http.Request) {
 			Body:      chirp.Body,
 			UserID:    chirp.UserID,
 		}
+	}
+
+	if sortStr == "desc" {
+		sort.Slice(chirps, func(i, j int) bool {
+			return chirps[i].CreatedAt.Before(chirps[j].CreatedAt)
+		})
 	}
 
 	respondWithJSON(w, http.StatusOK, chirps)
