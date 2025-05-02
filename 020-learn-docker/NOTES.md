@@ -84,3 +84,37 @@ docker run -it --network caddytest docker/getting-started /bin/sh
 curl caddy1
 curl caddy2
 ```
+
+## Dockerfile
+
+Build a new image from the Dockerfile:
+
+```bash
+docker build . -t helloworld:latest
+```
+
+`-t helloworld:latest` tags the image with the name "helloworld" and the "latest" tag. Names are used to organize your images, and tags are used to keep track of different versions.
+
+Use the RUN command, and because this is a Debian/Linux image, we'll use apt to get some dependencies
+
+# Latest
+The old version is tagged "latest"... that's a bit confusing.
+The latest tag doesn't always indicate that a specific tag is the latest version of an image.
+In reality, latest is just the default tag that's used if you don't explicitly supply one. We didn't use a tag on our first version, that's why it was tagged with "latest".
+
+***Tag all new images with their version number***
+
+## The Deployment Process
+1. The developer (you) writes some new code
+2. The developer commits the code to Git
+3. The developer pushes a new branch to GitHub
+4. The developer opens a pull request to the main branch
+5. A teammate reviews the PR and approves it (if it looks good)
+6. The developer merges the pull request
+7. Upon merging, an automated script, perhaps a Github action, is started
+8. The script builds the code (if it's a compiled language)
+9. The script builds a new docker image with the latest program
+10. The script pushes the new image to Docker Hub
+11. The server that runs the containers, perhaps a Kubernetes cluster, is told there is a new version
+12. The k8s cluster pulls down the latest image
+13. The k8s cluster shuts down old containers as it spins up new containers of the latest image
