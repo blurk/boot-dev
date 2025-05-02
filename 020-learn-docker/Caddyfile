@@ -1,0 +1,8 @@
+localhost:80
+
+reverse_proxy caddy1:80 caddy2:80 {
+	lb_policy       round_robin
+}
+
+# This tells Caddy to run on localhost:80, and to round robin any incoming traffic to caddy1:80 and caddy2:80.
+# This only works because we're going to run the loadbalancer within the same network, so caddy1 and caddy2 will automatically resolve to our application server's containers.
