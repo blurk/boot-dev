@@ -1,3 +1,6 @@
 [submodule "019-file-servers-and-cdns-with-s3-and-cloudFront"]
 	path = 019-file-servers-and-cdns-with-s3-and-cloudFront
 	url = https://github.com/blurk/019-file-servers-and-cdns-with-s3-and-cloudFront.git
+[submodule "021-learn-cicd"]
+	path = 021-learn-cicd
+	url = https://github.com/blurk/learn-cicd.git
